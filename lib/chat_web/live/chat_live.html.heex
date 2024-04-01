@@ -1,0 +1,17 @@
+<div>
+  <h1 class="text-center font-bold">Chat App</h1>
+  <div class="border-solid border-2 rounded-md">
+    <h2 class="text-center">Recent chats</h2>
+    <div class="border-solid border-2 rounded-md h-52 m-5">
+      <p :for={message <- @messages}>
+        <%= message %>
+      </p>
+      
+    </div>
+  </div>
+  <div>
+    <form phx-submit="send-message">
+      <input name="message" value={@message}  class="border-solid border-2 rounded-md m-2" placeholder="enter your message here" />
+    </form>
+  </div>
+</div>
