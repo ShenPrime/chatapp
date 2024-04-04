@@ -16,7 +16,7 @@ defmodule ChatWeb.ChatLive do
     socket =
       socket
       |> assign(:message, "")
-      |> assign(:messages, [])
+      |> stream(:messages, [])
       |> assign(:handle, handle)
 
     {:ok, socket}
@@ -24,6 +24,8 @@ defmodule ChatWeb.ChatLive do
 
   @impl true
   def handle_event("send-message", %{"message" => message}, socket) do
+    id = Ecto.UUID.generate()
+
     PubSub.broadcast_from!(
       Chat.PubSub,
       self(),
@@ -33,16 +35,18 @@ defmodule ChatWeb.ChatLive do
 
     socket =
       socket
-      |> assign(:messages, socket.assigns.messages ++ [{message, socket.assigns.handle}])
+      |> stream_insert(:messages, %{id: id, message: message, handle: socket.assigns.handle})
 
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:new_message, message, handle}, socket) do
+    id = Ecto.UUID.generate()
+
     socket =
       socket
-      |> assign(:messages, socket.assigns.messages ++ [{message, handle}])
+      |> stream_insert(:messages, %{id: id, message: message, handle: handle})
 
     {:noreply, socket}
   end
