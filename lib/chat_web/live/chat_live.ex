@@ -12,11 +12,12 @@ defmodule ChatWeb.ChatLive do
     handle = MnemonicSlugs.generate_slug(2)
 
     PubSub.broadcast_from!(Chat.PubSub, self(), "new_user", {:new_user, handle})
+    messages = Chat.Chat.fetch_last_100()
 
     socket =
       socket
       |> assign(:message, "")
-      |> stream(:messages, [])
+      |> stream(:messages, messages)
       |> assign(:handle, handle)
 
     {:ok, socket}
@@ -33,6 +34,9 @@ defmodule ChatWeb.ChatLive do
       {:new_message, message, socket.assigns.handle}
     )
 
+    send(self(), {:insert_message, message, socket.assigns.handle, id})
+
+    #TODO: add timestamps to messages
     socket =
       socket
       |> stream_insert(:messages, %{id: id, message: message, handle: socket.assigns.handle})
@@ -63,6 +67,12 @@ defmodule ChatWeb.ChatLive do
   def handle_info(:clear_flash, socket) do
     Process.sleep(2000)
     socket = clear_flash(socket)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:insert_message, message, handle, id}, socket) do
+    Chat.Chat.insert_message({message, handle, id})
     {:noreply, socket}
   end
 end

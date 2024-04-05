@@ -1,10 +1,12 @@
 <div>
-  <h1 class="text-center font-bold">Chat App</h1>
-  <div class="border-solid border-2 rounded-md">
-    <h2 class="text-center">Recent chats</h2>
-    <div id="messages" phx-update="stream" class="border-solid border-2 rounded-md h-96 m-5 p-6">
-      <p :for={{id, message} <- @streams.messages} id={id} class="mb-2">
-        <p class="font-bold"><%= message.handle %></p>
+  <div>
+    <div id="messages" phx-update="stream">
+      <p
+        :for={{id, message} <- @streams.messages}
+        id={id}
+        class="mb-2 flex flex-col hover:bg-slate-950 p-2 border-2 border-transparent  hover:rounded-md hover:border-slate-950 hover:border-solid "
+      >
+        <span class="font-bold text-sky-400"><%= "#{message.handle}: " %></span>
         <%= message.message %>
       </p>
     </div>
@@ -14,7 +16,7 @@
       <input
         name="message"
         value={@message}
-        class="border-solid border-2 rounded-md m-2"
+        class="border-solid border-2 border-slate-800 bg-slate-800 p-2 m-2 w-full rounded-md m-2 fixed bottom-0 left-0 right-0 "
         placeholder="enter your message here"
       />
     </form>
